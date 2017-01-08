@@ -1,0 +1,200 @@
+<html>
+<head>
+    <!--
+     * Steuerung Multikopter
+     * Emmanuel Küpfer
+     *
+     * Nach Beispielen aus dem Buch
+     * Getting Started with Photon, https://github.com/simonmonk/photon_book
+     * Simon Monk, http://simonmonk.org/
+     * - Beispiel Steuerung mit Knöpfen
+     *   https://github.com/simonmonk/photon_book/blob/master/html/ch_06_relays.html
+     * - Beispiel Messwert Anzeige
+     *   https://github.com/simonmonk/photon_book/blob/master/html/p_10_thermometer.html
+     -->
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="raphael.2.1.0.min.js"></script>
+    <script src="justgage.1.0.1.min.js"></script>
+
+    <script>
+        var accessToken = "cb8b348000e9d0ea9e354990bbd39ccbfb57b30e";
+        var deviceID = "55ff74066678505539081667"
+
+        var armURL = "https://api.spark.io/v1/devices/" + deviceID + "/arm";
+        var throttleURL = "https://api.spark.io/v1/devices/" + deviceID + "/throttle";
+        var trottle_valueURL = "https://api.spark.io/v1/devices/" + deviceID + "/trottle_value";
+        var moveURL = "https://api.spark.io/v1/devices/" + deviceID + "/move";
+
+        var trimPitchURL = "https://api.spark.io/v1/devices/" + deviceID + "/trimPitch";
+        var trimRollURL = "https://api.spark.io/v1/devices/" + deviceID + "/trimRoll";
+        var trimYawURL = "https://api.spark.io/v1/devices/" + deviceID + "/trimYaw";
+
+
+
+        function arm(value)
+        {
+            $.post(armURL, {params: value, access_token: accessToken });
+        }
+
+
+        function throttle(value)
+        {
+            $.post(throttleURL, {params: value, access_token: accessToken });
+        }
+
+        function move(value)
+        {
+            $.post(moveURL, {params: value, access_token: accessToken });
+        }
+
+        function trimPitch(value)
+        {
+            $.post(trimPitchURL, {params: value, access_token: accessToken });
+        }
+
+        function trimRoll(value)
+        {
+            $.post(trimRollURL, {params: value, access_token: accessToken });
+        }
+
+        function trimYaw(value)
+        {
+            $.post(trimYawURL, {params: value, access_token: accessToken });
+        }
+
+        function callback(data, status){
+            if (status == "success") {
+                temp = parseFloat(data.result);
+                temp = temp.toFixed(2);
+                g.refresh(temp);
+                setTimeout(getThrottle, 1000);
+            }
+            else {
+                alert("There was a problem");
+            }
+        }
+        function getThrottle(){
+            $.get(trottle_valueURL, {access_token: accessToken}, callback);
+        }
+
+    </script>
+</head>
+
+<body>
+
+<h1>Multicopter und Internet of Things (IoT)</h1>
+<h2>Steuerung (kuepfer-photon-2)</h2>
+
+    <table>
+        <tr>
+            <td><input type="button" onClick="arm('on')" value="Arm"/></td>
+            <td><input type="button" onClick="arm('off')" value="Disarm"/></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+
+        </tr>
+
+        <tr>
+            <td><br></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+            <td>Trim</td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td><input type="button" onClick="throttle(-1)" value="  -1"/></td>
+            <td><input type="button" onClick="throttle(+1)" value="  +1"/></td>
+            <td></td>
+            <td></td>
+            <td><input type="button" onClick="move('back')" value="Hinten"/></td>
+            <td></td>
+            <td></td>
+            <td>Pitch</td>
+            <td><input type="button" onClick="trimPitch('5')" value=" << "/></td>
+            <td><input type="button" onClick="trimPitch('-5')" value=" >> "/></td>
+        </tr>
+
+        <tr>
+            <td><input type="button" onClick="throttle(-5)" value="  -5"/></td>
+            <td><input type="button" onClick="throttle(+5)" value="  +5"/></td>
+            <td></td>
+            <td><input type="button" onClick="move('left')" value=" Links"/></td>
+            <td><input type="button" onClick="move('stop')" value="  Stop "/></td>
+            <td><input type="button" onClick="move('right')" value="Rechts"/></td>
+            <td></td>
+            <td>Roll</td>
+            <td><input type="button" onClick="trimRoll('+5')" value=" << "/></td>
+            <td><input type="button" onClick="trimRoll('-5')" value=" >> "/></td>
+        </tr>
+
+        <tr>
+            <td><input type="button" onClick="throttle(-10)" value="-10"/></td>
+            <td><input type="button" onClick="throttle(+10)" value="+10"/></td>
+            <td></td>
+            <td></td>
+            <td><input type="button" onClick="move('front')" value="  Vorn "/></td>
+            <td></td>
+            <td></td>
+            <td>Yaw</td>
+            <td><input type="button" onClick="trimYaw('+5')" value=" << "/></td>
+            <td><input type="button" onClick="trimYaw('-5')" value=" >> "/></td>
+        </tr>
+
+        <tr>
+            <td><input type="button" onClick="throttle(-20)" value="-20"/></td>
+            <td><input type="button" onClick="throttle(+20)" value="+20"/></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td><input type="button" onClick="throttle(-50)" value="-50"/></td>
+            <td><input type="button" onClick="throttle(+50)" value="+50"/></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+    </table>
+
+    <br>
+    <h2>Anzeige</h2>
+    <div id="trottle" style="width:400px; height:320px"></div>
+    <script>
+        var g = new JustGage({
+            id: "trottle",
+            value: 990,
+            min: 990,
+            max: 2000,
+            title: "Trottle"
+        });
+        getThrottle();
+    </script>
+
+
+</body>
+</html>
